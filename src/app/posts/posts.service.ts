@@ -64,23 +64,31 @@ export class PostsService {
   }
 
   getPost(id: string) {
-    return this.http.get<{_id: string, title: string, content: string, imagePath: string}>('http://localhost:3000/api/posts/' + id);
+    return this.http.get<
+    {
+      _id: string,
+      title: string,
+      content: string,
+      imagePath: string,
+      creator: string
+    }>('http://localhost:3000/api/posts/' + id);
   }
 
   updatePost(id: string, title: string, content: string, image: File | string) {
     let postData: Post | FormData;
     if (typeof(image) === 'object') {
       postData = new FormData();
-      postData.append("id", id);
-      postData.append("title", title);
-      postData.append("content", content);
-      postData.append("image", image, title);
+      postData.append('id', id);
+      postData.append('title', title);
+      postData.append('content', content);
+      postData.append('image', image, title);
     } else {
       postData = {
-        id: id,
-        title: title,
-        content: content,
-        imagePath: image
+        id,
+        title,
+        content,
+        imagePath: image,
+        creator: null
       };
     }
     this.http

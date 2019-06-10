@@ -97,15 +97,24 @@ router.put('/:id',
     _id: req.body.id,
     title: req.body.title,
     content: req.body.content,
-    imagePath: imagePath
+    imagePath: imagePath,
+    creator: req.userData.userId
   });
 
-  Post.updateOne({_id: req.params.id}, post)
+  Post.updateOne({_id: req.params.id, creator: req.userData.userId}, post)
   .then(result => {
-    res.status(200).json({
-      message: 'Update successfull',
-      image: post.imagePath
-    });
+    if (result.nModified > 0) {
+      res.status(200).json({
+        message: 'Update successfull',
+        image: post.imagePath
+      });
+    } else {
+      res.status(401).json({
+        message: 'Not authorized',
+        image: post.imagePath
+      });
+    }
+
   });
 });
 
@@ -123,12 +132,19 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.delete('/:id',  checkAuth, (req, res, next) => {
-  Post.deleteOne({_id: req.params.id})
+  Post.deleteOne({_id: req.params.id, creator: req.userData.userId})
   .then(result => {
-    console.log('Deleeted');
-    res.status(200).json({
-      message: "Post "+ req.params.id +" deleted"
-    });
+    if (result.n > 0) {
+      res.status(200).json({
+        message: 'Deletion successfull',
+        image: post.imagePath
+      });
+    } else {
+      res.status(401).json({
+        message: 'Not authorized',
+        image: post.imagePath
+      });
+    }
   })
   .catch((err) => {
     console.log('Cromo');
