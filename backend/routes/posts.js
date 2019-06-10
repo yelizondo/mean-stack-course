@@ -1,7 +1,6 @@
 const express = require('express');
 const multer = require('multer');
 const Post = require('../models/post');
-
 const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
@@ -67,7 +66,8 @@ router.post('',
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
-    imagePath: url + '/images/' + req.file.filename
+    imagePath: url + '/images/' + req.file.filename,
+    creator: req.userData.userId
   });
 
 
