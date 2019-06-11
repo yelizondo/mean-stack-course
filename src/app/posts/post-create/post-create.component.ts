@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { PostsService } from '../posts.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../post.model';
 import { mimeType } from './mime-type.validator';
 import { sizeValidator } from './image-size.validator';
+import { Subscription } from 'rxjs';
+import { AuthServices } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-post-create',
   templateUrl: './post-create.component.html',
   styleUrls: ['./post-create.component.css']
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
   enteredTitle = '';
   enteredContent = '';
   private mode = 'create';
@@ -20,16 +22,26 @@ export class PostCreateComponent implements OnInit {
   isLoading = false;
   form: FormGroup;
   imagePreview: string;
+  private authStatusSub: Subscription;
 
-  constructor(public postsService: PostsService, public route: ActivatedRoute) { }
+  constructor(
+    public postsService: PostsService,
+    public route: ActivatedRoute,
+    public authService: AuthServices
+  ) { }
 
   ngOnInit() {
+    this.authStatusSub = this.authService.getAuthStatusListener().subscribe(
+      authStatus => {
+        this.isLoading = false;
+      }
+    );
     this.form = new FormGroup({
-      'title': new FormControl(null, {
+      title: new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
         }),
-      'content': new FormControl(null, {validators: [Validators.required]}),
-      'image': new FormControl(null, {
+      content: new FormControl(null, { validators: [Validators.required] }),
+      image: new FormControl(null, {
         validators: [Validators.required],
         asyncValidators: [mimeType, sizeValidator]
       })
@@ -53,9 +65,9 @@ export class PostCreateComponent implements OnInit {
             creator: postData.creator
           };
           this.form.setValue({
-            'title': this.post.title,
-            'content': this.post.content,
-            'image': this.post.imagePath
+            title: this.post.title,
+            content: this.post.content,
+            image: this.post.imagePath
           });
         });
       } else {
@@ -96,5 +108,9 @@ export class PostCreateComponent implements OnInit {
       this.imagePreview = (reader.result as string);
     };
     reader.readAsDataURL(file);
+  }
+
+  ngOnDestroy() {
+    this.authStatusSub.unsubscribe();
   }
 }

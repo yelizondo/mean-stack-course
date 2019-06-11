@@ -22,7 +22,7 @@ router.post("/signup", (req, res, next) => {
     })
     .catch(err => {
       res.status(404).json({
-        error: err
+        message: "Email already exists"
       });
     });
   });

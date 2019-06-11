@@ -54,6 +54,11 @@ router.get('', (req, res, next) => {
       posts: fetchedPosts,
       maxPosts: count
     });
+  })
+  .catch(error => {
+    res.status(500).json({
+      message: "Fetching posts failed"
+    });
   });
 });
 
@@ -81,6 +86,10 @@ router.post('',
         imagePath: createdPost.imagePath
       }
     });
+  }).catch(error => {
+    res.status(500).json({
+      message: "Creating a post failed"
+    })
   });
 });
 
@@ -115,6 +124,10 @@ router.put('/:id',
       });
     }
 
+  }).catch(error => {
+    res.status(500).json({
+      message: "Couldn't update post"
+    });
   });
 });
 
@@ -128,7 +141,12 @@ router.get('/:id', (req, res, next) => {
         message: "Post not found"
       });
     }
-  });
+  })
+  .catch(error => {
+    res.status(500).json({
+      message: "Fetching posts failed"
+    });
+  });;
 });
 
 router.delete('/:id',  checkAuth, (req, res, next) => {
@@ -146,8 +164,10 @@ router.delete('/:id',  checkAuth, (req, res, next) => {
       });
     }
   })
-  .catch((err) => {
-    console.log('Cromo');
+  .catch(error => {
+    res.status(500).json({
+      message: "Fetching posts failed"
+    });
   });
 });
 
