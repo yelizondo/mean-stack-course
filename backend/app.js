@@ -8,7 +8,10 @@ const userRoutes = require('./routes/user');
 
 const app = express();
 
-mongoose.connect("mongodb+srv://admin:KKe5EYlOHM4I5pt9@cluster0-dreim.mongodb.net/node-angular", {useNewUrlParser: true})
+mongoose.connect("mongodb+srv://admin:" +
+  process.env.MONGO_ATLAS_PW +
+  "@cluster0-dreim.mongodb.net/node-angular",
+  {useNewUrlParser: true})
 .then(() => {
   console.log('Connected to the database!');
 })
@@ -17,7 +20,7 @@ mongoose.connect("mongodb+srv://admin:KKe5EYlOHM4I5pt9@cluster0-dreim.mongodb.ne
 });
 
 app.use(bodyParser.json());
-app.use("/images", express.static(path.join('backend/images')));
+app.use("/images", express.static(path.join('images')));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin','*');
